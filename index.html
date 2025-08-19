@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plan de curso</title>
+
+  <!-- Bootstrap 5 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand-pink:#e3186b;  /* Identificación */
+      --purple:#5e4ea2;      /* Justificación / tarjetas */
+      --green:#3f8749;       /* Propósitos */
+      --blue:#0073e6;        /* Competencias */
+
+      /* Cuadro de imagen de Justificación */
+      --just-img-width: clamp(260px, 36vw, 520px);
+      --just-img-ratio: 16 / 9;
+    }
+
+    body{ background:#111; margin:0; }
+
+    /* Contenedor principal grande */
+    .stage{
+      width: min(96vw, 1400px);
+      min-height: 92vh;
+      margin: 2vh auto;
+      background:#fff;
+      border-radius:14px;
+      position:relative;
+      overflow:hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    /* Vistas + animación */
+    .view{
+      position:absolute; inset:0; padding:28px 28px 96px;
+      opacity:0; transform: translateX(20px); pointer-events:none;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .view.active{ opacity:1; transform:none; pointer-events:auto; }
+
+    /* ====== PORTADA (vista 0) ====== */
+    .view-hero{ padding-top:210px; }
+    .hero-intro .welcome{ color:#000000; font-size:.95rem; margin-bottom:.25rem; }
+    .hero-intro h1{ margin:0 0 .25rem; font-size:clamp(36px,5.6vw,72px); line-height:1.05; }
+    .hero-intro .subtitle{ color:#000000; font-size:clamp(14px,2.2vw,20px); margin:0; }
+
+    /* Imágenes posicionadas en portada */
+    .img-sintitulo{
+      position:absolute;
+      top:1px; 
+      left:1px;
+      width:90px;
+       height:196px;      /* tamaño solicitado */
+      object-fit:contain;
+      pointer-events:none; user-select:none;
+    }
+    .img-unicordoba{
+      position:absolute;
+      left:1px;
+      bottom:10px;
+      width:336px;
+      height:170px;      /* tamaño solicitado */
+      object-fit:contain;
+      pointer-events:none; user-select:none;
+    }
+
+    /* Flechas (entre vistas) */
+    .nav-arrow{
+      position:absolute; top:50%; transform:translateY(-50%);
+      width:56px; height:56px; border-radius:50%; border:none; color:#fff;
+      font-size:1.6rem; display:flex; align-items:center; justify-content:center;
+      box-shadow:0 6px 16px rgba(0,0,0,.12); z-index:4;
+      transition: background-color .25s ease;
+    }
+    .nav-arrow.left{ left:24px; background:var(--green); }
+    .nav-arrow.right{ right:24px; background:var(--brand-pink); }
+    .nav-arrow:focus-visible{ outline:3px solid #000; }
+
+    /* Tarjetas Identificación */
+    .id-card{
+      color:#fff; border-radius:14px; padding:20px; width:280px; height:190px;
+      display:flex; flex-direction:column; justify-content:space-between;
+      box-shadow:0 12px 28px rgba(0,0,0,.1);
+    }
+    .id-card h6{ font-size:.95rem; font-weight:800; margin:0; }
+    .id-card .big{ font-size:1.35rem; font-weight:800; }
+
+    /* Tabs inferiores */
+    .bottom-tabs{
+      position:absolute; left:0; right:0; bottom:0;
+      padding:12px 14px; background:#fff; border-top:1px solid #eee; z-index:5;
+    }
+    .bottom-tabs.hidden{ display:none; }
+    .bottom-tabs .nav{ gap:.6rem; }
+    .bottom-tabs .nav-link{
+      border:none; background:transparent; color:#333; font-weight:600;
+      border-radius:999px; padding:.55rem 1.05rem; display:flex; align-items:center; gap:6px;
+    }
+    .bottom-tabs .nav-link[data-tab="1"].active{ background:var(--brand-pink); color:#fff !important; }
+    .bottom-tabs .nav-link[data-tab="2"].active{ background:var(--purple); color:#fff !important; }
+    .bottom-tabs .nav-link[data-tab="3"].active{ background:var(--green); color:#fff !important; }
+    .bottom-tabs .nav-link[data-tab="4"].active{ background:var(--blue); color:#fff !important; }
+
+    /* Imágenes genéricas (otras vistas) */
+    .view img{ max-width:100%; height:auto; border-radius:10px; display:block; margin:auto; }
+    .img-small{ max-height:300px; object-fit:contain; }
+
+    /* ===== Justificación ===== */
+    .just-wrap{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+    .just-img-frame{
+      width: var(--just-img-width);
+      aspect-ratio: var(--just-img-ratio);
+      border-radius: 14px; overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+      background:#fff; position:relative;
+    }
+    .just-img-frame img{ width:100%; height:100%; object-fit: cover; }
+    .btn-viewmore{
+      position:absolute; right:10px; bottom:10px;
+      background:#fff; color:#333; border:none; border-radius:999px;
+      padding:.4rem .9rem; font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,.18);
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .just-copy{ width: min(var(--just-img-width), 92vw); text-align:left; }
+
+    /* Tarjeta morada (look) */
+    .card-purple{
+      width: min(980px, 92%);
+      margin: 0 auto;
+      background: var(--purple);
+      color:#fff; border-radius: 16px;
+      padding: 22px 26px; box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      line-height:1.55; text-align: justify; font-size: .92rem;
+    }
+    /* scroll solo si el texto es largo */
+    .card-purple[data-scroll="auto"]{
+      max-height: 420px; overflow: auto; scrollbar-gutter: stable;
+    }
+    .card-purple[data-scroll="auto"]::-webkit-scrollbar{ width:10px; }
+    .card-purple[data-scroll="auto"]::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,.35); border-radius:10px;
+    }
+    .card-purple .actions{ display:flex; justify-content:flex-end; gap:.5rem; margin-top:10px; }
+    .btn-light-outline{
+      background:#fff; color:#4b448a; border:none; border-radius:999px; padding:.35rem .8rem;
+      box-shadow:0 2px 10px rgba(0,0,0,.08); font-weight:600;
+    }
+
+    /* ===== Competencias ===== */
+    .comp-grid .comp-card{
+      border:none; border-radius:14px; overflow:hidden;
+      box-shadow:0 6px 16px rgba(0,0,0,.12);
+      transition:transform .25s ease, box-shadow .25s ease;
+      cursor:pointer; height:100%;
+    }
+    .comp-grid .comp-card:hover{ transform:translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,.15); }
+    .comp-grid .comp-card img{ width:100%; height:200px; object-fit:cover; }
+    .comp-grid .comp-card .card-body{ text-align:left; }
+    .comp-grid .comp-card .card-title{ font-weight:800; margin-bottom:.35rem; }
+
+    .hidden{ display:none !important; }
+
+    @media (max-width: 576px){
+      .id-card{ width:100%; height:auto; }
+      .nav-arrow{ width:50px; height:50px; }
+      :root{ --just-img-width: clamp(240px, 84vw, 520px); }
+      .prop-panel .prop-box img{ max-height:140px; }
+      .comp-grid .comp-card img{ height:160px; }
+      .card-purple[data-scroll="auto"]{ max-height: 55vh; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+
+    <!-- ===== VISTA 0 (PORTADA) ===== -->
+    <section class="view active view-hero" id="view-0">
+      <div class="hero-intro">
+        <h1 class="fw-bold">Plan de Curso</h1>
+        <p class="subtitle">Mediaciones tecnológicas de las ciencias naturales</p>
+      </div>
+
+      <!-- Imágenes en portada -->
+      <img src="image/Sin título-28 (1) 1.png" alt="Sin título" class="img-sintitulo">
+      <img src="image/Logo unicordoba.png" alt="Universidad de Córdoba" class="img-unicordoba">
+
+      <button class="nav-arrow right" data-next="1" aria-label="Siguiente"><i class="bi bi-chevron-right"></i></button>
+    </section>
+
+    <!-- ===== VISTA 1: IDENTIFICACIÓN ===== -->
+    <section class="view" id="view-1">
+      <h2 class="text-center mb-4">Identificación del curso</h2>
+      <div class="d-flex justify-content-center gap-3 flex-wrap mb-3">
+        <div class="id-card" style="background:var(--brand-pink);">
+          <h6>Horas de acompañamiento docente</h6>
+          <div class="big">36 horas</div>
+        </div>
+        <div class="id-card" style="background:var(--green);">
+          <h6>Horas de trabajo independiente</h6>
+          <div class="big">108 horas</div>
+        </div>
+        <div class="id-card" style="background:var(--blue);">
+          <h6>Área de formación</h6>
+          <div class="big">Disciplinar</div>
+        </div>
+      </div>
+      <button class="nav-arrow left" data-prev="0" aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+      <button class="nav-arrow right" data-next="2" aria-label="Siguiente"><i class="bi bi-chevron-right"></i></button>
+    </section>
+
+    <!-- ===== VISTA 2: JUSTIFICACIÓN ===== -->
+    <section class="view" id="view-2">
+      <h2 class="text-center mb-4">Justificación del curso</h2>
+
+      <!-- IMAGEN + copete -->
+      <div class="container" data-just="panel">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8">
+            <div class="just-wrap">
+              <div class="just-img-frame">
+                <img src="image/Universidad.png" alt="Edificio campus">
+                <button class="btn-viewmore" data-just="open">
+                  <i class="bi bi-arrows-angle-expand"></i> Ver más
+                </button>
+              </div>
+              <div class="just-copy">
+                <h5 class="fw-bold mb-2">Objeto de estudio</h5>
+                <p class="text-muted mb-0">
+                  Impacto de las mediaciones tecnológicas en la transformación del
+                  proceso de enseñanza del docente de ciencias naturales.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA MORADA -->
+      <div class="container hidden" data-just="card">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            <div class="card-purple" data-scroll="auto" role="dialog" aria-label="Justificación ampliada">
+              <p class="mb-0">
+                El objeto de estudio del curso es el impacto de las mediaciones tecnológicas en la trasformación del proceso de enseñanza del docente de ciencias naturales. Los referentes teóricos en los cuales se sustenta el curso son Vygotsky, Wertsch, 1982, Chevallard, 1991, Pérez 2002, Galvis (2008), Sánchez, 1996, MEN 2014, UNESCO, 2008, ISTE 2008 entre otros autores.
+              </p>
+              <p class="mt-3 mb-0">
+                El curso está dirigido a docentes de ciencias naturales de educación básica, media y superior, interesados por la reflexión, en relación al desarrollo de recursos educativos digitales, al uso pedagógico de las TIC y sus formas de incorporación al quehacer docente. Además promueve la reflexión alrededor de las mediaciones tecnológicas y de las competencias TIC requeridas para promover prácticas educativas innovadoras.
+              </p>
+              <p class="mt-3 mb-0">
+                Este curso le brinda herramientas conceptuales y prácticas al docente de ciencias naturales, el cual le permitirá el diseño, implementación y evaluación de recursos educativos digitales, atendiendo a estándares nacionales e internacionales, proporcionándoles técnicas y herramientas para fortalecer su praxis. La OCDE (2003) plantea que las prácticas docentes mediadas por TIC son el camino para mejorar la calidad en el aprendizaje de los estudiantes. Sandobal (2011) plantea que las TIC no funcionan por sí mismas, son un medio para los procesos de enseñanza-aprendizaje en el aula. De hecho, la combinación entre las tecnologías y los medios utilizados para la enseñanza se denomina mediaciones tecnológicas.
+              </p>
+              <p class="mt-3 mb-0">
+                El MEN (2014) plantea dentro de sus políticas la formación docente en TIC. La formación de docentes en este sentido pretende brindar orientación fundamentalmente para realizar la incorporación de tecnología en el aula con un sentido pedagógico y con criterios claros que lleven al desarrollo de prácticas docentes reflexivas, estructuradas y planeadas de acuerdo con la intención de facilitar los procesos de enseñanza y aprendizaje. El alcance de este curso es proporcionar herramientas conceptuales y prácticas en torno a los nuevos roles y competencias de los docentes para hacer un uso reflexivo, pertinente y productivo de las TIC en diferentes contextos educativos.
+              </p>
+              <div class="actions">
+                <button type="button" class="btn-light-outline" data-just="close">Ver imagen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-arrow left" data-prev="1" aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+      <button class="nav-arrow right" data-next="3" aria-label="Siguiente"><i class="bi bi-chevron-right"></i></button>
+    </section>
+
+    <!-- ===== VISTA 3: PROPÓSITOS ===== -->
+    <section class="view" id="view-3">
+      <h2 class="text-center mb-4">Propósitos de formación del curso</h2>
+
+      <div class="container prop-panel" data-prop="panel">
+        <div class="row justify-content-center gy-5">
+          <div class="col-12 col-md-5">
+            <div class="prop-box">
+              <img src="image/Cup.png" alt="General">
+              <h5 class="mt-2">GENERAL</h5>
+              <p class="text-muted">Comprender el impacto que generan las mediaciones tecnológicas en el proceso de enseñanza de las ciencias naturales.</p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-5">
+            <div class="prop-box" data-prop="open-especificos">
+              <img src="image/Key.png" alt="Específicos">
+              <h5 class="mt-2">ESPECÍFICOS</h5>
+              <p class="text-muted">Profundizar sobre las concepciones de las mediaciones tecnológicas en la enseñanza de las ciencias naturales.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container hidden" data-prop="card-especificos">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            <div class="card-purple prop-card" role="dialog" aria-label="Propósitos específicos">
+              <h6 class="fw-bold mb-2">Específicos</h6>
+              <ul>
+                <li>Profundizar sobre las concepciones de las mediaciones tecnológicas en la enseñanza de las ciencias naturales.</li>
+                <li>Identificar competencias TIC claves para fortalecer las estrategias de enseñanza de los docentes de ciencias naturales.</li>
+                <li>Desarrollar recursos educativos digitales como mediaciones tecnológicas para la enseñanza de las ciencias naturales.</li>
+              </ul>
+              <div class="actions">
+                <button type="button" class="btn-light-outline" data-prop="close">Ver resumen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-arrow left" data-prev="2" aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+      <button class="nav-arrow right" data-next="4" aria-label="Siguiente"><i class="bi bi-chevron-right"></i></button>
+    </section>
+
+    <!-- ===== VISTA 4: COMPETENCIAS ===== -->
+    <section class="view" id="view-4">
+      <h2 class="text-center mb-4">Competencias del curso</h2>
+
+      <div class="container comp-grid" data-comp="grid">
+        <div class="row g-4 justify-content-center">
+          <div class="col-12 col-md-4">
+            <div class="card comp-card" data-comp="open" data-target="saber">
+              <img src="image/Saber.png" alt="Saber">
+              <div class="card-body">
+                <h6 class="card-title">SABER</h6>
+                <p class="card-text">Capacidad para reconocer la importancia de las mediaciones tecnológicas.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card comp-card" data-comp="open" data-target="hacer">
+              <img src="image/Saber hacer.png" alt="Saber Hacer">
+              <div class="card-body">
+                <h6 class="card-title">SABER HACER</h6>
+                <p class="card-text">Conoce la importancia de incorporar las TIC en la práctica docente.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card comp-card" data-comp="open" data-target="ser">
+              <img src="image/Saber ser.png" alt="Saber Ser">
+              <div class="card-body">
+                <h6 class="card-title">SABER SER</h6>
+                <p class="card-text">Capacidad para reconocer el valor didáctico que tienen las mediaciones tecnológicas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles -->
+      <div class="container hidden" data-comp="detail" id="comp-saber">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-10">
+            <div class="card-purple">
+              <h5>Saber</h5>
+              <p>Capacidad para reconocer la importancia de las TIC en la enseñanza de las ciencias naturales desde un enfoque epistémico, pedagógico y didáctico.</p>
+              <p>Analiza las mediaciones tecnológicas desde lo tecnológico, cultural, comunicativo y pedagógico; compara experiencias significativas y reconoce las competencias TIC que debe tener el docente. Diseña y evalúa recursos digitales como mediación didáctica en el aula.</p>
+              <div class="actions"><button class="btn-light-outline" data-comp="back">Ver tarjetas</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container hidden" data-comp="detail" id="comp-hacer">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-10">
+            <div class="card-purple">
+              <h5>Saber hacer</h5>
+              <p>Comprende la importancia de incorporar las TIC en la práctica docente para generar aprendizajes significativos.</p>
+              <p>Selecciona, adapta y utiliza recursos digitales; relaciona modelos de competencia y estándares TIC; reconoce la evaluación como herramienta para fortalecer la calidad.</p>
+              <div class="actions"><button class="btn-light-outline" data-comp="back">Ver tarjetas</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container hidden" data-comp="detail" id="comp-ser">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-10">
+            <div class="card-purple">
+              <h5>Saber ser</h5>
+              <p>Reconoce el valor didáctico de las mediaciones tecnológicas en los procesos de enseñanza, asumiendo una actitud ética y responsable frente a las actividades programadas.</p>
+              <p>Promueve el trabajo colaborativo y la calidad en el desarrollo de recursos educativos digitales.</p>
+              <div class="actions"><button class="btn-light-outline" data-comp="back">Ver tarjetas</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-arrow left" data-prev="3" aria-label="Anterior"><i class="bi bi-chevron-left"></i></button>
+    </section>
+
+    <!-- ===== TABS ===== -->
+    <div class="bottom-tabs hidden" id="tabs">
+      <ul class="nav justify-content-center flex-wrap">
+        <li class="nav-item"><button class="nav-link" data-tab="1"><i class="bi bi-person-badge"></i> Identificación</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="2"><i class="bi bi-journal-text"></i> Justificación</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="3"><i class="bi bi-bullseye"></i> Propósitos</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="4"><i class="bi bi-gear"></i> Competencias</button></li>
+      </ul>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const tabsEl = document.getElementById('tabs');
+    const rightArrow = () => document.querySelector('.view.active .nav-arrow.right');
+
+    // Colores del botón derecho por vista
+    const rightColors = {
+      1: getComputedStyle(document.documentElement).getPropertyValue('--brand-pink').trim(),
+      2: getComputedStyle(document.documentElement).getPropertyValue('--purple').trim(),
+      3: getComputedStyle(document.documentElement).getPropertyValue('--green').trim(),
+      4: getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(),
+    };
+
+    function setActiveTab(viewId){
+      if(Number(viewId) === 0){ tabsEl.classList.add('hidden'); }
+      else{ tabsEl.classList.remove('hidden'); }
+
+      document.querySelectorAll('.bottom-tabs .nav-link').forEach(b=>b.classList.remove('active'));
+      const btn = document.querySelector(`.bottom-tabs .nav-link[data-tab="${viewId}"]`);
+      if(btn) btn.classList.add('active');
+
+      requestAnimationFrame(()=>{
+        const ra = rightArrow();
+        if(ra){
+          const color = rightColors[viewId] || getComputedStyle(document.documentElement).getPropertyValue('--brand-pink').trim();
+          ra.style.backgroundColor = color;
+        }
+      });
+    }
+
+    function goToView(id){
+      const current = document.querySelector('.view.active');
+      const next = document.getElementById(`view-${id}`);
+      if(!next || next === current) return;
+
+      current?.classList.remove('active');
+      next.classList.add('active');
+      setActiveTab(Number(id));
+
+      // Restaurar paneles al salir
+      if(Number(id) !== 2) showJustImage();
+      if(Number(id) !== 3) showPropPanel();
+      if(Number(id) !== 4) compShowGrid();
+    }
+
+    /* ===== Justificación ===== */
+    const justPanel = document.querySelector('[data-just="panel"]');
+    const justCard  = document.querySelector('[data-just="card"]');
+    function showJustCard(){ justPanel?.classList.add('hidden'); justCard?.classList.remove('hidden'); }
+    function showJustImage(){ justPanel?.classList.remove('hidden'); justCard?.classList.add('hidden'); }
+
+    /* ===== Propósitos ===== */
+    const propPanel = document.querySelector('[data-prop="panel"]');
+    const propCard  = document.querySelector('[data-prop="card-especificos"]');
+    function showPropCard(){ propPanel?.classList.add('hidden'); propCard?.classList.remove('hidden'); }
+    function showPropPanel(){ propPanel?.classList.remove('hidden'); propCard?.classList.add('hidden'); }
+
+    /* ===== Competencias ===== */
+    const compGrid   = document.querySelector('[data-comp="grid"]');
+    const compDetails= document.querySelectorAll('[data-comp="detail"]');
+    function compShowGrid(){
+      compGrid?.classList.remove('hidden');
+      compDetails.forEach(d=>d.classList.add('hidden'));
+    }
+    function compShowDetail(which){
+      compGrid?.classList.add('hidden');
+      compDetails.forEach(d=>d.classList.add('hidden'));
+      const target = document.getElementById(`comp-${which}`);
+      target?.classList.remove('hidden');
+    }
+
+    // Delegación de eventos
+    document.addEventListener('click', (e)=>{
+      const next = e.target.closest('[data-next]');
+      const prev = e.target.closest('[data-prev]');
+      const tab  = e.target.closest('.bottom-tabs .nav-link');
+      if(next) goToView(next.getAttribute('data-next'));
+      if(prev) goToView(prev.getAttribute('data-prev'));
+      if(tab)  goToView(tab.getAttribute('data-tab'));
+
+      // Justificación
+      if(e.target.closest('[data-just="open"]')) showJustCard();
+      if(e.target.closest('[data-just="close"]')) showJustImage();
+
+      // Propósitos
+      if(e.target.closest('[data-prop="open-especificos"]')) showPropCard();
+      if(e.target.closest('[data-prop="close"]') || e.target.closest('.card-purple.prop-card')) showPropPanel();
+
+      // Competencias
+      const compOpen = e.target.closest('[data-comp="open"]');
+      if(compOpen) compShowDetail(compOpen.getAttribute('data-target'));
+      if(e.target.closest('[data-comp="back"]')) compShowGrid();
+    });
+
+    // Atajos teclado
+    document.addEventListener('keydown', (e)=>{
+      const views = [...document.querySelectorAll('.view')];
+      const idx = views.findIndex(v=>v.classList.contains('active'));
+      if(e.key==='ArrowRight') goToView(Math.min(idx+1, views.length-1));
+      if(e.key==='ArrowLeft')  goToView(Math.max(idx-1, 0));
+      if(e.key==='Escape'){
+        if(!document.querySelector('[data-just="card"]').classList.contains('hidden')) showJustImage();
+        if(!document.querySelector('[data-prop="card-especificos"]').classList.contains('hidden')) showPropPanel();
+        const anyOpen = [...compDetails].some(d=>!d.classList.contains('hidden'));
+        if(anyOpen) compShowGrid();
+      }
+    });
+
+    // Estado inicial
+    setActiveTab(0);
+  </script>
+</body>
+</html>
