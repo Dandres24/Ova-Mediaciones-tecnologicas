@@ -308,6 +308,47 @@
   .nav-arrow.right{ right: 10px; }
 }
 
+/* Flechas en las esquinas (móvil) + espacio para que no tapen títulos */
+@media (max-width: 576px){
+  /* más espacio arriba para títulos/subtítulos */
+  .view{
+    padding: 64px 16px calc(96px + env(safe-area-inset-bottom));
+  }
+
+  /* flechas pequeñas, pegadas a las esquinas superiores */
+  .nav-arrow{
+    top: 12px;              /* esquina superior */
+    bottom: auto;           /* no cerca de la barra inferior */
+    transform: none;
+    width: 44px; 
+    height: 44px;
+    z-index: 4;
+  }
+  .nav-arrow.left{  left: 12px;  }
+  .nav-arrow.right{ right: 12px; }
+
+  /* sigue dejando hueco para la barra de tabs inferior */
+  .view::after{
+    content:"";
+    display:block;
+    height: calc(76px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Tablets pequeñas: mismo criterio, un poco más de margen */
+@media (min-width:577px) and (max-width:768px){
+  .view{ padding: 70px 22px calc(98px + env(safe-area-inset-bottom)); }
+  .nav-arrow{
+    top: 16px;
+    bottom: auto;
+    transform: none;
+    width: 50px; 
+    height: 50px;
+  }
+  .nav-arrow.left{  left: 16px; }
+  .nav-arrow.right{ right: 16px; }
+}
+
 
   </style>
 </head>
