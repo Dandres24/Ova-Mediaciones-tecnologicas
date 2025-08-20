@@ -170,6 +170,145 @@
       .nav-arrow.left{ left:16px; } .nav-arrow.right{ right:16px; }
       .bottom-tabs .nav-link{ padding:.5rem 1rem; }
     }
+    /* Ajuste para que no se choque con la barra de navegación en móviles */
+      @media (max-width: 576px) {
+     main, 
+     .stage, 
+     .contenido {
+    padding-bottom: 80px; /* puedes ajustar a 70px o 100px según el espacio */
+  }
+}
+ /* ===== Ajustes móvil: que se vea TODO y no se tape con los tabs ===== */
+@media (max-width: 576px){
+  .stage{
+    width: 100vw;
+    min-height: 100dvh;
+    border-radius: 0;
+    /* NO cambiamos overflow aquí; dejamos el scroll a la vista */
+  }
+
+  /* 👇 CLAVE: la vista puede hacer scroll y tiene espacio inferior */
+  .view{
+    padding: 16px 16px calc(120px + env(safe-area-inset-bottom)); /* más espacio bajo */
+    overflow: auto;                 /* <- habilita el scroll por vista */
+    -webkit-overflow-scrolling: touch;  /* scroll suave en iOS */
+  }
+
+  .view h1{ font-size: clamp(26px, 8vw, 36px); }
+  .view h2{ font-size: clamp(20px, 6.2vw, 28px); }
+  .id-card{ padding:16px; }
+
+  .nav-arrow{
+    width:46px; height:46px;
+    top:auto; bottom: calc(86px + env(safe-area-inset-bottom));
+    transform: none;
+  }
+  .nav-arrow.left{ left:12px; }
+  .nav-arrow.right{ right:12px; }
+
+  .bottom-tabs{
+    padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+  }
+  .bottom-tabs .nav{ gap:.4rem; }
+  .bottom-tabs .nav-link{
+    padding:.45rem .85rem;
+    font-size:.95rem;
+    white-space:nowrap;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+
+  :root{ --just-img-width: clamp(240px, 88vw, 520px); }
+  .card-purple[data-scroll="auto"]{ max-height:58vh; }
+
+  /* ❌ Ya no necesitamos el pseudo-espaciador si usabas uno */
+  .view::after{ content:none; }
+}
+
+/* ==== FIX PORTADA EN MÓVIL: logos y flecha no se chocan ==== */
+@media (max-width: 576px){
+  /* más aire arriba para el título en portada */
+  .view-hero{
+    padding-top: 210px;         /* antes 210px global; en móvil bajamos y ordenamos */
+  }
+  .view-hero .hero-intro{
+    padding: 0 12px;            /* evita que el texto se pegue al borde */
+  }
+
+  /* logo superior izquierdo (Sin título...) más pequeño y con auto-height */
+  .view-hero .img-sintitulo{
+    top: 10px;
+    left: 10px;
+    width: 64px;                /* antes 90px */
+    height: auto;               /* evita deformación */
+  }
+
+  /* logo Unicórdoba queda por ENCIMA de la barra inferior y lejos de la flecha */
+  .view-hero .img-unicordoba{
+    left: 10px;
+    bottom: calc(118px + env(safe-area-inset-bottom)); /* por encima de tabs */
+    width: min(58vw, 220px);     /* responsive sin deformar */
+    height: auto;
+  }
+
+  /* mover SOLO la flecha de la portada más arriba para que no tape el logo */
+  .view-hero .nav-arrow.right{
+    right: 12px;
+    bottom: calc(180px + env(safe-area-inset-bottom)); /* por encima del logo */
+    transform: none; /* nos aseguramos que no use el translateY del modo desktop */
+  }
+}
+
+/* ==== Flechas en las esquinas sin tapar contenido (móvil) ==== */
+@media (max-width: 576px){
+  /* tamaño de flecha en móvil */
+  :root{ --arrow-size: 46px; }
+
+  /* deja un "canal" lateral para que el contenido no pase debajo de las flechas */
+  .view{
+    padding-left: calc(16px + var(--arrow-size) + 8px);
+    padding-right: calc(16px + var(--arrow-size) + 8px);
+  }
+
+  /* coloca las flechas a media altura, pegadas a los bordes */
+  .nav-arrow{
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+  .nav-arrow.left{  left: 8px;  }
+  .nav-arrow.right{ right: 8px; }
+
+  /* la portada ya tenía un ajuste especial de flecha: lo anulamos para usar el canal lateral */
+  .view-hero .nav-arrow.right{
+    bottom: auto;              /* anulamos cualquier bottom previo */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* ==== Tablet pequeña: canal un poco menor, flecha algo más grande ==== */
+@media (min-width:577px) and (max-width:768px){
+  :root{ --arrow-size: 52px; }
+
+  .view{
+    padding-left: calc(22px + var(--arrow-size) + 6px);
+    padding-right: calc(22px + var(--arrow-size) + 6px);
+  }
+
+  .nav-arrow{
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+  .nav-arrow.left{  left: 10px; }
+  .nav-arrow.right{ right: 10px; }
+}
+
+
   </style>
 </head>
 <body>
