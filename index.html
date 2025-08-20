@@ -349,6 +349,24 @@
   .nav-arrow.right{ right: 16px; }
 }
 
+/* ===== Ajuste: en móviles quitamos TODAS las flechas menos la de la portada ===== */
+@media (max-width: 576px){
+  /* Ocultar todas las flechas */
+  .nav-arrow{ display:none !important; }
+
+  /* Mostrar solo la flecha de la portada */
+  .view-hero .nav-arrow.right{
+    display:flex !important;
+    position:absolute;
+    right:12px;
+    bottom: calc(180px + env(safe-area-inset-bottom));
+    width:46px; 
+    height:46px;
+    align-items:center;
+    justify-content:center;
+  }
+}
+
 
   </style>
 </head>
